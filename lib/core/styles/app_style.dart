@@ -66,10 +66,10 @@ class AppStyles {
     fontSize: 18.sp,
   );
 
-  static TextStyle style28(BuildContext context) {
+  static TextStyle style24(BuildContext context) {
     return TextStyle(
       color: Theme.of(context).primaryColor,
-      fontSize: 26.sp,
+      fontSize: 24.sp,
       fontWeight: FontWeight.bold,
     );
   }

@@ -3,17 +3,17 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies_app/core/sqflite_services/sqflite_services.dart';
+import 'package:movies_app/features/auth/register/presentation/screens/register_screen.dart';
 import 'package:movies_app/features/curved_navigation_bar/presentation/manger/navigation_provider.dart';
 import 'package:movies_app/features/curved_navigation_bar/presentation/screens/curved_navigation_bar.dart';
 import 'package:movies_app/features/favorite/presentation/manger/favorite_movie_provider.dart';
 import 'package:movies_app/features/home/presentation/manger/movies_provider.dart';
 import 'package:movies_app/features/home/presentation/screens/home_screen.dart';
-import 'package:movies_app/features/profile/presentation/presentation/manger/theme_provider.dart';
 import 'package:movies_app/features/splash/prsentation/screens/splash_screen.dart';
 import 'package:movies_app/firebase_options.dart';
 import 'package:provider/provider.dart';
 
-import 'core/theme/theme.dart';
+import 'features/profile/presentation/manger/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
                 debugShowCheckedModeBanner: false,
                 theme: Provider.of<ThemeProvider>(context).getCurrentTheme(),
-                home:SplashView()
+                home:SplashView(),
           );
 
         });

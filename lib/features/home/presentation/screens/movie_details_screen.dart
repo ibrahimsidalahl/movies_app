@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies_app/core/funcation/funcation.dart';
@@ -26,7 +27,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   Widget build(BuildContext context) {
     final favoriteMovieProvider = Provider.of<FavoriteMovieProvider>(context);
     final isFavorite =
-    favoriteMovieProvider.isFavoriteMovie('${widget.movie.id}');
+        favoriteMovieProvider.isFavoriteMovie('${widget.movie.id}');
 
     return Scaffold(
       body: FutureBuilder<MovieModel>(
@@ -42,53 +43,55 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       children: [
                         Container(
                           height: 450.h,
-                          // width: 120.w,
-                          decoration: BoxDecoration(
-                            //color: Colors.w,
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(widget.movie.image!),
-                            ),
-                            // borderRadius: BorderRadius.all(Radius.circular()),
+                          width: double.infinity,
+                          child: CachedNetworkImage(
+                            fit: BoxFit.fill,
+                            imageUrl: widget.movie.image!,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    CircularProgressIndicator(
+                                        value: downloadProgress.progress),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
                           ),
                         ),
                         Positioned(
                             child: Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.arrow_back_ios,
-                                    size: 28.sp,
-                                    color: Color(0xffEB5757),
-                                  ),
-                                  onPressed: () {
-                                    navigate(
-                                        context: context,
-                                        screen: CurvedNavigatonBarScreen());
-                                  },
-                                ),
-                                SizedBox(
-                                  width: 260.sp,
-                                ),
-                                CustomIconButton(
-                                  onPressed: () {
-                                    if (isFavorite) {
-                                      favoriteMovieProvider.removeFavoriteMovie(
-                                          '${widget.movie.id}');
-                                    } else {
-                                      favoriteMovieProvider.addFavoriteMovie(
-                                        '${widget.movie.id}',
-                                        '${widget.movie.title}',
-                                        '${widget.movie.image}',
-                                      );
-                                    }
-                                  },
-                                  icon: isFavorite
-                                      ? Icons.favorite
-                                      : Icons.favorite_border_rounded,
-                                )
-                              ],
-                            ))
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                Icons.arrow_back_ios,
+                                size: 28.sp,
+                                color: Color(0xffEB5757),
+                              ),
+                              onPressed: () {
+                                navigate(
+                                    context: context,
+                                    screen: CurvedNavigatonBarScreen());
+                              },
+                            ),
+                            SizedBox(
+                              width: 260.sp,
+                            ),
+                            CustomIconButton(
+                              onPressed: () {
+                                if (isFavorite) {
+                                  favoriteMovieProvider.removeFavoriteMovie(
+                                      '${widget.movie.id}');
+                                } else {
+                                  favoriteMovieProvider.addFavoriteMovie(
+                                    '${widget.movie.id}',
+                                    '${widget.movie.title}',
+                                    '${widget.movie.image}',
+                                  );
+                                }
+                              },
+                              icon: isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border_rounded,
+                            )
+                          ],
+                        ))
                       ],
                     ),
                     Padding(
@@ -102,7 +105,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 Text('${widget.movie.title}',
                                     softWrap: true,
                                     maxLines: 2,
-                                    style: AppStyles.style28(context)),
+                                    style: AppStyles.style24(context)),
                               ],
                             ),
                           ),
@@ -139,9 +142,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                             children: [
                               Icon(
                                 Icons.play_circle_outline,
-                                  color: Color(0xffEB5757),
+                                color: Color(0xffEB5757),
                                 size: 32.sp,
-                                  ),
+                              ),
                               Text(
                                 'Watch trailer',
                                 style: AppStyles.stylee24(context),
@@ -154,7 +157,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                             child: Center(
                               child: YoutubePlayerScreen(
                                   videoId:
-                                  '${snapshot.data!.trailerYoutubeId}'),
+                                      '${snapshot.data!.trailerYoutubeId}'),
                             ),
                           ),
                           SizedBox(

@@ -48,14 +48,14 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ],
                 )),
-                Image.asset('assets/splash_logo.png',fit: BoxFit.fill,height: 150.h,),
+                Image.asset('assets/logo.png',fit: BoxFit.fill,height: 150.h,),
                 Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Email',
-                          style: AppStyles.style28(context)                      ),
+                          style: AppStyles.style24(context)                      ),
                       SizedBox(
                         height: 8.h,
                       ),
@@ -73,6 +73,7 @@ class SignInScreen extends StatelessWidget {
                         ),
                         title: 'Enter your email',
                         controller: emailController,
+
                         obscureText: false,
                       ),
                       SizedBox(
@@ -83,7 +84,7 @@ class SignInScreen extends StatelessWidget {
                       ),
                       Text(
                         'Password',
-                          style: AppStyles.style28(context)                      ),
+                          style: AppStyles.style24(context)                      ),
                       SizedBox(
                         height: 8.h,
                       ),
@@ -133,32 +134,17 @@ class SignInScreen extends StatelessWidget {
                                   email: emailController.text,
                                   password: passwordController.text,
                                 );
+                                emailController.clear();
+                                passwordController.clear();
                                 navigate(
                                     context: context,
                                     screen: CurvedNavigatonBarScreen());
                               } on FirebaseAuthException catch (e) {
                                 if (e.code == 'user-not-found') {
                                   print(e);
-                                  AwesomeDialog(
-                                    context: context,
-                                    dialogType: DialogType.error,
-                                    animType: AnimType.rightSlide,
-                                    title: 'Error',
-                                    desc: '${e.code}',
-                                    btnOkOnPress: () {},
-                                    btnOkColor: Color(0xffEB5757),
-                                  )..show();
+
                                 } else if (e.code == 'wrong-password') {
-                                  print('==================$e');
-                                  AwesomeDialog(
-                                    context: context,
-                                    dialogType: DialogType.error,
-                                    animType: AnimType.rightSlide,
-                                    title: 'Error',
-                                    desc: '${e.code}',
-                                    btnOkOnPress: () {},
-                                    btnOkColor: Color(0xffEB5757),
-                                  ).show(); // Call the show() method here
+                                  print('$e');
                                 }
                               }
                             }
@@ -206,7 +192,7 @@ class SignInScreen extends StatelessWidget {
                                   fontSize: 18.sp,
                                   color: Color(0xffEB5757),
                                 ),
-                              ))
+                              )),
                         ],
                       ),
                     ],

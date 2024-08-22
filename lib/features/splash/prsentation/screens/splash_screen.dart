@@ -67,11 +67,11 @@ class SplashView extends StatefulWidget {
             SlideTransition(
               position: _animation,
               child: Image.asset(
-                'assets/splash_logo.png',
+                'assets/logo.png',
                 scale: 2,
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20.h),
             AnimatedOpacity(
               opacity: _imageAnimationCompleted ? 1.0 : 0.0,
               duration: Duration(milliseconds: 300),

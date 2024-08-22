@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movies_app/core/funcation/funcation.dart';
-import 'package:movies_app/core/http_services/http_services.dart';
 import 'package:movies_app/core/styles/app_style.dart';
 import 'package:movies_app/core/widgets/custom_icon_button.dart';
-import 'package:movies_app/features/home/data/models/movies_model.dart';
+import 'package:movies_app/features/home/presentation/manger/movies_provider.dart';
 import 'package:movies_app/features/home/presentation/screens/movie_details_screen.dart';
-import 'package:movies_app/features/home/presentation/screens/search_delegate.dart';
 import 'package:provider/provider.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../favorite/presentation/manger/favorite_movie_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,19 +25,21 @@ class _HomeScreenState extends State<HomeScreen> {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         Provider.of<FavoriteMovieProvider>(context, listen: false)
             .fetchFavoriteMovie();
+        Provider.of<MoviesProvider>(context, listen: false).fetchData();
       });
     }
   }
 
+  @override
   Widget build(BuildContext context) {
+    final moviesProvider = context.watch<MoviesProvider>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         actions: [
           IconButton(
-              onPressed: () {
-                Search();
-              },
+              onPressed: () {},
               icon: Icon(
                 Icons.search,
                 color: Color(0xffEB5757),
@@ -48,19 +48,17 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Trending', style: AppStyles.colorPageTitle(context)),
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: FutureBuilder<List<MoviesModel>>(
-        future: HttpServices.getMovies(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return GridView.builder(
+      body: moviesProvider.movies != null
+          ? GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.6,
-                  crossAxisSpacing: 6.h,
-                  mainAxisSpacing: 2.w),
+                crossAxisCount: 2,
+                childAspectRatio: 0.6,
+                crossAxisSpacing: 6.h,
+                mainAxisSpacing: 2.w,
+              ),
+              itemCount: moviesProvider.movies!.length,
               itemBuilder: (context, index) {
-                List<MoviesModel> movies = snapshot.data!;
-                final movie = snapshot.data![index];
+                final movie = moviesProvider.movies![index];
                 return InkWell(
                   onTap: () {
                     Navigator.of(context).push(navigate(
@@ -71,71 +69,67 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.all(6.0),
                     child: Column(
                       children: [
-                        Stack(children: [
-                          Hero(
-                            tag: Container,
-                            child: Container(
-                              height: 209.h,
-                              width: 180.w,
-                              decoration: BoxDecoration(
-                                //color: Colors.w,
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(movies[index].image!),
+                        Stack(
+                          children: [
+                            Hero(
+                              tag: movie.id!,
+                              child: Container(
+                                height: 220.h,
+                                width: 180.w,
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(12)),
                                 ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(12)),
+                                child: CachedNetworkImage(
+                                  fit: BoxFit.fill,
+                                  imageUrl: movie.image!,
+                                  progressIndicatorBuilder:
+                                      (context, url, downloadProgress) =>
+                                          CircularProgressIndicator(
+                                              value: downloadProgress.progress),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            bottom: 160.h,
-                            left: 120.w,
-                            child: CustomIconButton(
-                              icon:  Provider.of<FavoriteMovieProvider>(context).isFavoriteMovie('${movies[index].id}') ? Icons.favorite : Icons.favorite_border_rounded,
-                              onPressed: () async {
-                                FavoriteMovieProvider favoriteMovieProvider =
-                                    Provider.of<FavoriteMovieProvider>(context,
-                                        listen: false);
-                                if (favoriteMovieProvider
-                                    .isFavoriteMovie('${movies[index].id}')) {
-                                  favoriteMovieProvider.removeFavoriteMovie(
-                                      '${movies[index].id}');
-                                } else {
-                                  favoriteMovieProvider.addFavoriteMovie(
-                                    '${movies[index].id}',
-                                    '${movies[index].title}',
-                                    '${movies[index].image}',
-                                  );
-                                }
-                              },
+                            Positioned(
+                              bottom: 160.h,
+                              left: 120.w,
+                              child: CustomIconButton(
+                                icon:
+                                    Provider.of<FavoriteMovieProvider>(context)
+                                            .isFavoriteMovie(movie.id!)
+                                        ? Icons.favorite
+                                        : Icons.favorite_border_rounded,
+                                onPressed: () async {
+                                  FavoriteMovieProvider favoriteMovieProvider =
+                                      Provider.of<FavoriteMovieProvider>(
+                                          context,
+                                          listen: false);
+                                  if (favoriteMovieProvider
+                                      .isFavoriteMovie(movie.id!)) {
+                                    favoriteMovieProvider
+                                        .removeFavoriteMovie(movie.id!);
+                                  } else {
+                                    favoriteMovieProvider.addFavoriteMovie(
+                                      movie.id!,
+                                      movie.title!,
+                                      movie.image!,
+                                    );
+                                  }
+                                },
+                              ),
                             ),
-
-                            // child: IconButton(
-                            //   icon: (
-                            //       FavoriteMovieProvider().isFavoriteMovie('${movies[index].id}'))
-                            //       ?  Icon(Icons.favorite,
-                            //     size: 28.sp,
-                            //     color: Color(0xffEB5757),)
-                            //       :  Icon(Icons.favorite_border, size: 28.sp,color: Color(0xffEB5757),),
-                            //   onPressed: () async {
-                            //     Provider.of<FavoriteMovieProvider>(context,
-                            //         listen: false)
-                            //         .addFavoriteMovie(
-                            //       '${movies[index].id}',
-                            //       '${movies[index].title}',
-                            //       '${movies[index].image}',
-                            //     );
-                            //   },
-                            // ),
-                          )
-                        ]),
-                        Text(movies[index].title!,
-                            style: AppStyles.colorMovieTitle(context)),
+                          ],
+                        ),
+                        Text(
+                          movie.title!,
+                          style: AppStyles.colorMovieTitle(context),
+                        ),
                         Row(
                           children: [
                             Text(
-                              movies[index].rating!,
+                              movie.rating!,
                               style: AppStyles.style14(context),
                             ),
                             Icon(
@@ -147,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 80.w,
                             ),
                             Text(
-                              '(${movies[index].year})',
+                              '(${movie.year})',
                               style: AppStyles.style14(context),
                             ),
                           ],
@@ -157,18 +151,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error.toString()}'),
-            );
-          } else {
-            return const Center(
+            )
+          : const Center(
               child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
+            ),
     );
   }
 }

@@ -51,7 +51,7 @@ class RegisterScreen extends StatelessWidget {
                     ),
                   ],
                 )),
-                Text('Name', style: AppStyles.style28(context)),
+                Text('Name', style: AppStyles.style24(context)),
                 SizedBox(
                   height: 8.h,
                 ),
@@ -74,7 +74,7 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(
                   height: 4.h,
                 ),
-                Text('Email', style: AppStyles.style28(context)),
+                Text('Email', style: AppStyles.style24(context)),
                 SizedBox(
                   height: 8.h,
                 ),
@@ -97,7 +97,7 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(
                   height: 4.h,
                 ),
-                Text('phone', style: AppStyles.style28(context)),
+                Text('phone', style: AppStyles.style24(context)),
                 SizedBox(
                   height: 8.h,
                 ),
@@ -121,7 +121,7 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(
                   height: 4.h,
                 ),
-                Text('Password', style: AppStyles.style28(context)),
+                Text('Password', style: AppStyles.style24(context)),
                 SizedBox(
                   height: 8.h,
                 ),
@@ -146,7 +146,7 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(
                   height: 4.h,
                 ),
-                Text('Confirm Password', style: AppStyles.style28(context)),
+                Text('Confirm Password', style: AppStyles.style24(context)),
                 SizedBox(
                   height: 8.h,
                 ),
@@ -189,6 +189,12 @@ class RegisterScreen extends StatelessWidget {
                             'name': nameController.text,
                             'phone': phoneController.text,
                           });
+                          nameController.clear();
+                          emailController.clear();
+                          phoneController.clear();
+                          passwordController.clear();
+                          confirmPasswordController.clear();
+
                           navigate(
                               context: context,
                               screen: CurvedNavigatonBarScreen());
@@ -204,22 +210,11 @@ class RegisterScreen extends StatelessWidget {
                               btnOkOnPress: () {},
                               btnOkColor: Color(0xff704f38),
                             )..show();
-                          } else if (e.code == 'email-already-in-use') {
-                            print('The account already exists for that email.');
-                            AwesomeDialog(
-                              context: context,
-                              dialogType: DialogType.error,
-                              animType: AnimType.rightSlide,
-                              title: 'Error',
-                              desc: '${e.code}',
-                              btnOkOnPress: () {},
-                              btnOkColor: Color(0xff704f38),
-                            )..show();
                           } else {
                             print('An unexpected error occurred: $e');
                           }
                         } catch (e) {
-                          print('=========================== $e');
+                          print(e);
                         }
                       }
                     }),

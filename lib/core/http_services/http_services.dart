@@ -12,14 +12,15 @@ class HttpServices {
     final response = await http.get(
       Uri.parse(baseUrl),
       headers: {
-        'X-RapidAPI-Key': '20510b85abmsh1e95b3dc6c14187p1861b1jsn894da5f5ca23',
-        'X-RapidAPI-Host': 'imdb-top-100-movies.p.rapidapi.com'
+        'x-rapidapi-host': 'imdb-top-100-movies.p.rapidapi.com',
+        'x-rapidapi-key': '024febf387mshce34a6e1f1ce9f1p1ce76fjsn9139c48e286c'
 
       },
     );
     if (response.statusCode == 200) {
       final List<dynamic> jsonData = json.decode(response.body);
       List<MoviesModel> movies = jsonData.map((item) => MoviesModel.fromJson(item)).toList();
+      print('==============================================$movies');
       return movies;
     } else {
       //print(response.body);
@@ -33,14 +34,16 @@ class HttpServices {
     final response = await http.get(
       Uri.parse('$url'),
       headers: {
-        'X-RapidAPI-Key': '20510b85abmsh1e95b3dc6c14187p1861b1jsn894da5f5ca23',
-        'X-RapidAPI-Host': 'imdb-top-100-movies.p.rapidapi.com'
+        'x-rapidapi-host': 'imdb-top-100-movies.p.rapidapi.com',
+        'x-rapidapi-key': '024febf387mshce34a6e1f1ce9f1p1ce76fjsn9139c48e286c'
+
       },
     );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonData = json.decode(response.body);
       final MovieModel movie = MovieModel.fromJson(jsonData);
+      print('moviepppppppppppppppppppppppppppppppppppppppppppp');
       return movie;
     } else {
       throw Exception('Failed to load top 100 movies ${response.body}');

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,72 +18,76 @@ class FavoriteScreen extends StatefulWidget {
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
-
-
   Widget build(BuildContext context) {
-    final favoriteProduct = Provider.of<FavoriteMovieProvider>(context).favoriteMovie;
+    final favoriteProduct =
+        Provider.of<FavoriteMovieProvider>(context).favoriteMovie;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text('Favorite', style: AppStyles.colorPageTitle(context)),
-      ),
-      body: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.6,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text('Favorite', style: AppStyles.colorPageTitle(context)),
+        ),
+        body: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.8,
+          ),
+          itemCount: favoriteProduct!.length,
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.all(8),
+              width: 182.w,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      Container(
+                        height: 205.h,
+                        width: 182.w,
+                        child: CachedNetworkImage(
+                          fit: BoxFit.fill,
+                          imageUrl: favoriteProduct[index]['image'],
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) =>
+                                  CircularProgressIndicator(
+                                      value: downloadProgress.progress),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12)),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 160.h,
+                        left: 120.w,
+                        child: IconButton(
+                          onPressed: () async {
+                            await Provider.of<FavoriteMovieProvider>(context,
+                                    listen: false)
+                                .removeFavoriteMovie(
+                                    favoriteProduct[index]['id']);
+                          },
+                          icon: Icon(
+                            Icons.favorite,
+                            color: Color(0xffEB5757),
+                            size: 24.sp,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    favoriteProduct[index]['title'],
+                    overflow: TextOverflow.ellipsis,
+                    style: AppStyles.colorMovieTitle(context),
+                  ),
+                ],
               ),
-              itemCount: favoriteProduct!.length,
-
-        itemBuilder: (context, index) {
-          return Container(
-            padding: const EdgeInsets.all(8),
-            width: 182.w,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      height: 205.h,
-                      width: 182.w,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(favoriteProduct[index]['image']),
-                        ),
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 160.h,
-                      left: 120.w,
-                      child: IconButton(
-                        onPressed: () async {
-                          await Provider.of<FavoriteMovieProvider>(context, listen: false)
-                              .removeFavoriteMovie(favoriteProduct[index]['id']);
-                        },
-                        icon: Icon(
-                          Icons.favorite,
-                          color: Color(0xffEB5757),
-                          size: 24.sp,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  favoriteProduct[index]['title'],
-                  overflow: TextOverflow.ellipsis,
-                  style: AppStyles.colorMovieTitle(context),
-                ),
-              ],
-            ),
-          );
-        },
-
-      )
-
-    );
+            );
+          },
+        ));
   }
 }
